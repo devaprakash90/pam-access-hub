@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Eye, Check, X, AlertTriangle, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -183,318 +184,320 @@ const MyRequests = () => {
       </div>
 
       <Dialog open={detailsOpen} onOpenChange={setDetailsOpen}>
-        <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Request Details</DialogTitle>
-            <DialogDescription>
-              Detailed information for request {selectedRequest}
-            </DialogDescription>
-          </DialogHeader>
-          
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-2">
-            <TabsList className="grid w-full grid-cols-5">
-              <TabsTrigger value="details">Details</TabsTrigger>
+        <DialogContent className="sm:max-w-3xl max-h-[90vh]">
+          <ScrollArea className="max-h-[80vh] overflow-y-auto pr-4">
+            <DialogHeader>
+              <DialogTitle>Request Details</DialogTitle>
+              <DialogDescription>
+                Detailed information for request {selectedRequest}
+              </DialogDescription>
+            </DialogHeader>
+            
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-2">
+              <TabsList className="grid w-full grid-cols-5">
+                <TabsTrigger value="details">Details</TabsTrigger>
+                {hasLogs(requestDetails.status) && (
+                  <>
+                    <TabsTrigger value="transactions">Transaction Usage</TabsTrigger>
+                    <TabsTrigger value="audit">Audit Logs</TabsTrigger>
+                    <TabsTrigger value="changes">Change Docs</TabsTrigger>
+                    <TabsTrigger value="insights">AI Insights</TabsTrigger>
+                  </>
+                )}
+              </TabsList>
+              
+              <TabsContent value="details" className="py-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-1">Request Number</h3>
+                    <p className="font-medium">{requestDetails.id}</p>
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-1">Status</h3>
+                    <Badge
+                      variant="outline"
+                      className={cn("font-normal", getStatusColor(requestDetails.status))}
+                    >
+                      {requestDetails.status}
+                    </Badge>
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-1">Requested By</h3>
+                    <p>{requestDetails.requestedBy}</p>
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-1">Requested For</h3>
+                    <p>{requestDetails.requestedFor}</p>
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-1">Manager</h3>
+                    <p>{requestDetails.manager}</p>
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-1">Firefighter ID</h3>
+                    <p>{requestDetails.firefighterId}</p>
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-1">SAP System</h3>
+                    <p>{requestDetails.system}</p>
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-1">ITSM Ticket</h3>
+                    <p>{requestDetails.ticketNo}</p>
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-1">Start Date/Time</h3>
+                    <p>{requestDetails.startDate}</p>
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-1">End Date/Time</h3>
+                    <p>{requestDetails.endDate}</p>
+                  </div>
+                  <div className="col-span-2">
+                    <h3 className="text-sm font-medium text-muted-foreground mb-1">Transactions/Reports/Programs</h3>
+                    <p className="text-sm">{requestDetails.transactions}</p>
+                  </div>
+                  <div className="col-span-2">
+                    <h3 className="text-sm font-medium text-muted-foreground mb-1">Activities</h3>
+                    <p className="text-sm whitespace-pre-line">{requestDetails.activities}</p>
+                  </div>
+                  <div className="col-span-2">
+                    <h3 className="text-sm font-medium text-muted-foreground mb-1">Created On</h3>
+                    <p>{requestDetails.createdOn}</p>
+                  </div>
+                </div>
+              </TabsContent>
+              
               {hasLogs(requestDetails.status) && (
                 <>
-                  <TabsTrigger value="transactions">Transaction Usage</TabsTrigger>
-                  <TabsTrigger value="audit">Audit Logs</TabsTrigger>
-                  <TabsTrigger value="changes">Change Docs</TabsTrigger>
-                  <TabsTrigger value="insights">AI Insights</TabsTrigger>
-                </>
-              )}
-            </TabsList>
-            
-            <TabsContent value="details" className="py-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <h3 className="text-sm font-medium text-muted-foreground mb-1">Request Number</h3>
-                  <p className="font-medium">{requestDetails.id}</p>
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium text-muted-foreground mb-1">Status</h3>
-                  <Badge
-                    variant="outline"
-                    className={cn("font-normal", getStatusColor(requestDetails.status))}
-                  >
-                    {requestDetails.status}
-                  </Badge>
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium text-muted-foreground mb-1">Requested By</h3>
-                  <p>{requestDetails.requestedBy}</p>
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium text-muted-foreground mb-1">Requested For</h3>
-                  <p>{requestDetails.requestedFor}</p>
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium text-muted-foreground mb-1">Manager</h3>
-                  <p>{requestDetails.manager}</p>
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium text-muted-foreground mb-1">Firefighter ID</h3>
-                  <p>{requestDetails.firefighterId}</p>
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium text-muted-foreground mb-1">SAP System</h3>
-                  <p>{requestDetails.system}</p>
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium text-muted-foreground mb-1">ITSM Ticket</h3>
-                  <p>{requestDetails.ticketNo}</p>
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium text-muted-foreground mb-1">Start Date/Time</h3>
-                  <p>{requestDetails.startDate}</p>
-                </div>
-                <div>
-                  <h3 className="text-sm font-medium text-muted-foreground mb-1">End Date/Time</h3>
-                  <p>{requestDetails.endDate}</p>
-                </div>
-                <div className="col-span-2">
-                  <h3 className="text-sm font-medium text-muted-foreground mb-1">Transactions/Reports/Programs</h3>
-                  <p className="text-sm">{requestDetails.transactions}</p>
-                </div>
-                <div className="col-span-2">
-                  <h3 className="text-sm font-medium text-muted-foreground mb-1">Activities</h3>
-                  <p className="text-sm whitespace-pre-line">{requestDetails.activities}</p>
-                </div>
-                <div className="col-span-2">
-                  <h3 className="text-sm font-medium text-muted-foreground mb-1">Created On</h3>
-                  <p>{requestDetails.createdOn}</p>
-                </div>
-              </div>
-            </TabsContent>
-            
-            {hasLogs(requestDetails.status) && (
-              <>
-                <TabsContent value="transactions">
-                  <div className="py-4">
-                    <div className="flex justify-between items-center mb-4">
-                      <h3 className="text-lg font-medium">Transaction Usage Logs</h3>
-                      <Button variant="outline" size="sm" className="flex items-center gap-1">
-                        <Download className="h-4 w-4 mr-1" />
-                        Export
-                      </Button>
-                    </div>
-                    <div className="overflow-x-auto">
-                      <Table>
-                        <TableHeader>
-                          <TableRow className="bg-muted/50">
-                            <TableHead>Timestamp</TableHead>
-                            <TableHead>User</TableHead>
-                            <TableHead>Transaction</TableHead>
-                            <TableHead>Client</TableHead>
-                            <TableHead>Duration</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {transactionLogs.map((log, index) => (
-                            <TableRow key={index} className="hover:bg-muted/30 transition-colors">
-                              <TableCell>{log.timestamp}</TableCell>
-                              <TableCell>{log.user}</TableCell>
-                              <TableCell>{log.transaction}</TableCell>
-                              <TableCell>{log.client}</TableCell>
-                              <TableCell>{log.duration}</TableCell>
+                  <TabsContent value="transactions">
+                    <div className="py-4">
+                      <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-lg font-medium">Transaction Usage Logs</h3>
+                        <Button variant="outline" size="sm" className="flex items-center gap-1">
+                          <Download className="h-4 w-4 mr-1" />
+                          Export
+                        </Button>
+                      </div>
+                      <div className="overflow-x-auto">
+                        <Table>
+                          <TableHeader>
+                            <TableRow className="bg-muted/50">
+                              <TableHead>Timestamp</TableHead>
+                              <TableHead>User</TableHead>
+                              <TableHead>Transaction</TableHead>
+                              <TableHead>Client</TableHead>
+                              <TableHead>Duration</TableHead>
                             </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
+                          </TableHeader>
+                          <TableBody>
+                            {transactionLogs.map((log, index) => (
+                              <TableRow key={index} className="hover:bg-muted/30 transition-colors">
+                                <TableCell>{log.timestamp}</TableCell>
+                                <TableCell>{log.user}</TableCell>
+                                <TableCell>{log.transaction}</TableCell>
+                                <TableCell>{log.client}</TableCell>
+                                <TableCell>{log.duration}</TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
                     </div>
-                  </div>
-                </TabsContent>
-                
-                <TabsContent value="audit">
-                  <div className="py-4">
-                    <div className="flex justify-between items-center mb-4">
-                      <h3 className="text-lg font-medium">Security Audit Logs</h3>
-                      <Button variant="outline" size="sm" className="flex items-center gap-1">
-                        <Download className="h-4 w-4 mr-1" />
-                        Export
-                      </Button>
-                    </div>
-                    <div className="overflow-x-auto">
-                      <Table>
-                        <TableHeader>
-                          <TableRow className="bg-muted/50">
-                            <TableHead>Timestamp</TableHead>
-                            <TableHead>User</TableHead>
-                            <TableHead>Action</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead>Details</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {auditLogs.map((log, index) => (
-                            <TableRow key={index} className="hover:bg-muted/30 transition-colors">
-                              <TableCell>{log.timestamp}</TableCell>
-                              <TableCell>{log.user}</TableCell>
-                              <TableCell>{log.action}</TableCell>
-                              <TableCell>
-                                <Badge
-                                  variant="outline"
-                                  className={log.status === "Success" 
-                                    ? "bg-green-100 text-green-800 border-green-200" 
-                                    : "bg-red-100 text-red-800 border-red-200"}
-                                >
-                                  {log.status}
-                                </Badge>
-                              </TableCell>
-                              <TableCell>{log.details}</TableCell>
+                  </TabsContent>
+                  
+                  <TabsContent value="audit">
+                    <div className="py-4">
+                      <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-lg font-medium">Security Audit Logs</h3>
+                        <Button variant="outline" size="sm" className="flex items-center gap-1">
+                          <Download className="h-4 w-4 mr-1" />
+                          Export
+                        </Button>
+                      </div>
+                      <div className="overflow-x-auto">
+                        <Table>
+                          <TableHeader>
+                            <TableRow className="bg-muted/50">
+                              <TableHead>Timestamp</TableHead>
+                              <TableHead>User</TableHead>
+                              <TableHead>Action</TableHead>
+                              <TableHead>Status</TableHead>
+                              <TableHead>Details</TableHead>
                             </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
+                          </TableHeader>
+                          <TableBody>
+                            {auditLogs.map((log, index) => (
+                              <TableRow key={index} className="hover:bg-muted/30 transition-colors">
+                                <TableCell>{log.timestamp}</TableCell>
+                                <TableCell>{log.user}</TableCell>
+                                <TableCell>{log.action}</TableCell>
+                                <TableCell>
+                                  <Badge
+                                    variant="outline"
+                                    className={log.status === "Success" 
+                                      ? "bg-green-100 text-green-800 border-green-200" 
+                                      : "bg-red-100 text-red-800 border-red-200"}
+                                  >
+                                    {log.status}
+                                  </Badge>
+                                </TableCell>
+                                <TableCell>{log.details}</TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
                     </div>
-                  </div>
-                </TabsContent>
-                
-                <TabsContent value="changes">
-                  <div className="py-4">
-                    <div className="flex justify-between items-center mb-4">
-                      <h3 className="text-lg font-medium">Change Document Logs</h3>
-                      <Button variant="outline" size="sm" className="flex items-center gap-1">
-                        <Download className="h-4 w-4 mr-1" />
-                        Export
-                      </Button>
-                    </div>
-                    <div className="overflow-x-auto">
-                      <Table>
-                        <TableHeader>
-                          <TableRow className="bg-muted/50">
-                            <TableHead>Timestamp</TableHead>
-                            <TableHead>User</TableHead>
-                            <TableHead>Object</TableHead>
-                            <TableHead>Object ID</TableHead>
-                            <TableHead>Change</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {changeLogs.map((log, index) => (
-                            <TableRow key={index} className="hover:bg-muted/30 transition-colors">
-                              <TableCell>{log.timestamp}</TableCell>
-                              <TableCell>{log.user}</TableCell>
-                              <TableCell>{log.object}</TableCell>
-                              <TableCell>{log.objectID}</TableCell>
-                              <TableCell>{log.change}</TableCell>
+                  </TabsContent>
+                  
+                  <TabsContent value="changes">
+                    <div className="py-4">
+                      <div className="flex justify-between items-center mb-4">
+                        <h3 className="text-lg font-medium">Change Document Logs</h3>
+                        <Button variant="outline" size="sm" className="flex items-center gap-1">
+                          <Download className="h-4 w-4 mr-1" />
+                          Export
+                        </Button>
+                      </div>
+                      <div className="overflow-x-auto">
+                        <Table>
+                          <TableHeader>
+                            <TableRow className="bg-muted/50">
+                              <TableHead>Timestamp</TableHead>
+                              <TableHead>User</TableHead>
+                              <TableHead>Object</TableHead>
+                              <TableHead>Object ID</TableHead>
+                              <TableHead>Change</TableHead>
                             </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
+                          </TableHeader>
+                          <TableBody>
+                            {changeLogs.map((log, index) => (
+                              <TableRow key={index} className="hover:bg-muted/30 transition-colors">
+                                <TableCell>{log.timestamp}</TableCell>
+                                <TableCell>{log.user}</TableCell>
+                                <TableCell>{log.object}</TableCell>
+                                <TableCell>{log.objectID}</TableCell>
+                                <TableCell>{log.change}</TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
                     </div>
-                  </div>
-                </TabsContent>
-                
-                <TabsContent value="insights">
-                  <div className="py-6">
-                    <div className="mb-8">
-                      <h3 className="text-lg font-medium mb-4">AI Analysis Insights</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <Card className="p-6 border border-border">
-                          <h4 className="text-base font-medium mb-3">Activity Alignment</h4>
-                          <div className="flex items-center mb-2">
-                            <div className="flex-1 mr-4">
-                              <Progress value={aiInsights.alignment} className="h-2" />
-                            </div>
-                            <span className="text-sm font-semibold">{aiInsights.alignment}%</span>
-                          </div>
-                          <p className="text-sm text-muted-foreground">
-                            Match between performed activities and requested purpose
-                          </p>
-                        </Card>
-                        
-                        <Card className="p-6 border border-border">
-                          <h4 className="text-base font-medium mb-3">Ownership</h4>
-                          <div className="flex flex-col">
-                            <div className="mb-2">
-                              <Badge className="bg-blue-100 text-blue-800">
-                                {aiInsights.ownership}
-                              </Badge>
+                  </TabsContent>
+                  
+                  <TabsContent value="insights">
+                    <div className="py-6">
+                      <div className="mb-8">
+                        <h3 className="text-lg font-medium mb-4">AI Analysis Insights</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <Card className="p-6 border border-border">
+                            <h4 className="text-base font-medium mb-3">Activity Alignment</h4>
+                            <div className="flex items-center mb-2">
+                              <div className="flex-1 mr-4">
+                                <Progress value={aiInsights.alignment} className="h-2" />
+                              </div>
+                              <span className="text-sm font-semibold">{aiInsights.alignment}%</span>
                             </div>
                             <p className="text-sm text-muted-foreground">
-                              Primary area of responsibility for performed actions
+                              Match between performed activities and requested purpose
                             </p>
-                          </div>
+                          </Card>
+                          
+                          <Card className="p-6 border border-border">
+                            <h4 className="text-base font-medium mb-3">Ownership</h4>
+                            <div className="flex flex-col">
+                              <div className="mb-2">
+                                <Badge className="bg-blue-100 text-blue-800">
+                                  {aiInsights.ownership}
+                                </Badge>
+                              </div>
+                              <p className="text-sm text-muted-foreground">
+                                Primary area of responsibility for performed actions
+                              </p>
+                            </div>
+                          </Card>
+                        </div>
+                      </div>
+                      
+                      <div className="mb-8">
+                        <h3 className="text-base font-medium mb-3">Red Flags</h3>
+                        <Card className="p-4 border border-border">
+                          <ul className="space-y-3">
+                            {aiInsights.redFlags.map((flag, index) => (
+                              <li key={index} className="flex items-start">
+                                <AlertTriangle className="h-5 w-5 text-amber-500 mr-2 flex-shrink-0 mt-0.5" />
+                                <span className="text-sm">{flag}</span>
+                              </li>
+                            ))}
+                          </ul>
                         </Card>
                       </div>
-                    </div>
-                    
-                    <div className="mb-8">
-                      <h3 className="text-base font-medium mb-3">Red Flags</h3>
-                      <Card className="p-4 border border-border">
-                        <ul className="space-y-3">
-                          {aiInsights.redFlags.map((flag, index) => (
-                            <li key={index} className="flex items-start">
-                              <AlertTriangle className="h-5 w-5 text-amber-500 mr-2 flex-shrink-0 mt-0.5" />
-                              <span className="text-sm">{flag}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </Card>
-                    </div>
-                    
-                    <div className="mb-8">
-                      <h3 className="text-base font-medium mb-3">Recommendations</h3>
-                      <Card className="p-4 border border-border">
-                        <ul className="space-y-3">
-                          {aiInsights.recommendations.map((rec, index) => (
-                            <li key={index} className="flex items-start">
-                              <Check className="h-5 w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
-                              <span className="text-sm">{rec}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </Card>
-                    </div>
-                    
-                    <div>
-                      <h3 className="text-base font-medium mb-3">Risk & Compliance Scores</h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <Card className="p-6 border border-border">
-                          <h4 className="text-base font-medium mb-3">Compliance Score</h4>
-                          <div className="flex items-center mb-2">
-                            <div className="flex-1 mr-4">
-                              <Progress value={aiInsights.complianceScore} className="h-2" />
-                            </div>
-                            <span className="text-sm font-semibold">{aiInsights.complianceScore}/100</span>
-                          </div>
-                          <p className="text-sm text-muted-foreground">
-                            Measures adherence to compliance policies
-                          </p>
-                        </Card>
-                        
-                        <Card className="p-6 border border-border">
-                          <h4 className="text-base font-medium mb-3">Risk Score</h4>
-                          <div className="flex items-center mb-2">
-                            <div className="flex-1 mr-4">
-                              <Progress 
-                                value={aiInsights.riskScore} 
-                                className={cn(
-                                  "h-2",
-                                  aiInsights.riskScore > 75 ? "bg-red-200" : 
-                                  aiInsights.riskScore > 50 ? "bg-amber-200" : 
-                                  "bg-green-200"
-                                )}
-                                indicatorClassName={cn(
-                                  aiInsights.riskScore > 75 ? "bg-red-500" : 
-                                  aiInsights.riskScore > 50 ? "bg-amber-500" : 
-                                  "bg-green-500"
-                                )}
-                              />
-                            </div>
-                            <span className="text-sm font-semibold">{aiInsights.riskScore}/100</span>
-                          </div>
-                          <p className="text-sm text-muted-foreground">
-                            Assesses potential risk associated with activities
-                          </p>
+                      
+                      <div className="mb-8">
+                        <h3 className="text-base font-medium mb-3">Recommendations</h3>
+                        <Card className="p-4 border border-border">
+                          <ul className="space-y-3">
+                            {aiInsights.recommendations.map((rec, index) => (
+                              <li key={index} className="flex items-start">
+                                <Check className="h-5 w-5 text-green-500 mr-2 flex-shrink-0 mt-0.5" />
+                                <span className="text-sm">{rec}</span>
+                              </li>
+                            ))}
+                          </ul>
                         </Card>
                       </div>
+                      
+                      <div>
+                        <h3 className="text-base font-medium mb-3">Risk & Compliance Scores</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <Card className="p-6 border border-border">
+                            <h4 className="text-base font-medium mb-3">Compliance Score</h4>
+                            <div className="flex items-center mb-2">
+                              <div className="flex-1 mr-4">
+                                <Progress value={aiInsights.complianceScore} className="h-2" />
+                              </div>
+                              <span className="text-sm font-semibold">{aiInsights.complianceScore}/100</span>
+                            </div>
+                            <p className="text-sm text-muted-foreground">
+                              Measures adherence to compliance policies
+                            </p>
+                          </Card>
+                          
+                          <Card className="p-6 border border-border">
+                            <h4 className="text-base font-medium mb-3">Risk Score</h4>
+                            <div className="flex items-center mb-2">
+                              <div className="flex-1 mr-4">
+                                <Progress 
+                                  value={aiInsights.riskScore} 
+                                  className={cn(
+                                    "h-2",
+                                    aiInsights.riskScore > 75 ? "bg-red-200" : 
+                                    aiInsights.riskScore > 50 ? "bg-amber-200" : 
+                                    "bg-green-200"
+                                  )}
+                                  indicatorClassName={cn(
+                                    aiInsights.riskScore > 75 ? "bg-red-500" : 
+                                    aiInsights.riskScore > 50 ? "bg-amber-500" : 
+                                    "bg-green-500"
+                                  )}
+                                />
+                              </div>
+                              <span className="text-sm font-semibold">{aiInsights.riskScore}/100</span>
+                            </div>
+                            <p className="text-sm text-muted-foreground">
+                              Assesses potential risk associated with activities
+                            </p>
+                          </Card>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </TabsContent>
-              </>
-            )}
-          </Tabs>
+                  </TabsContent>
+                </>
+              )}
+            </Tabs>
+          </ScrollArea>
         </DialogContent>
       </Dialog>
     </MainLayout>
