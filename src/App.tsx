@@ -9,6 +9,12 @@ import SubmitRequest from "./pages/SubmitRequest";
 import MyRequests from "./pages/MyRequests";
 import ManageRequests from "./pages/ManageRequests";
 import ApprovalInbox from "./pages/ApprovalInbox";
+import ProvisioningLogs from "./pages/ProvisioningLogs";
+import FirefighterRequests from "./pages/FirefighterRequests";
+import Analytics from "./pages/Analytics";
+import ScheduledJobs from "./pages/ScheduledJobs";
+import JobLogs from "./pages/JobLogs";
+import DeleteLogs from "./pages/DeleteLogs";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,6 +31,12 @@ const App = () => (
           <Route path="/my-requests" element={<MyRequests />} />
           <Route path="/manage-requests" element={<ManageRequests />} />
           <Route path="/approval-inbox" element={<ApprovalInbox />} />
+          <Route path="/provisioning-logs" element={<ProvisioningLogs />} />
+          <Route path="/firefighter-requests" element={<FirefighterRequests />} />
+          <Route path="/analytics" element={<Analytics />} />
+          <Route path="/scheduled-jobs" element={<ScheduledJobs />} />
+          <Route path="/job-logs" element={<JobLogs />} />
+          <Route path="/delete-logs" element={<DeleteLogs />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
