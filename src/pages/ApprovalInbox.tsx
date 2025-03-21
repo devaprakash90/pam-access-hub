@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { MainLayout } from "@/components/layout/MainLayout";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -9,9 +8,10 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Progress } from "@/components/ui/progress";
-import { Eye, Check, X, AlertTriangle } from "lucide-react";
+import { Eye, Check, X, AlertTriangle, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 // Mock data
 const pendingApprovals = [
@@ -57,7 +57,6 @@ const requestDetails = {
   createdOn: "2023-05-18 14:22:10",
 };
 
-// Mock log data
 const transactionLogs = [
   { timestamp: "2023-05-20 09:15:23", user: "FF_SEC_01", transaction: "SU01", client: "100", duration: "00:02:35" },
   { timestamp: "2023-05-20 09:45:12", user: "FF_SEC_01", transaction: "PFCG", client: "100", duration: "00:08:12" },
@@ -81,7 +80,7 @@ const changeLogs = [
 // AI Insights mock data
 const aiInsights = {
   alignment: 85,
-  ownership: "IT",
+  ownership: "IT Users",
   redFlags: [
     "Multiple user profile changes in short time period",
     "Failed authorization check for FB01"
@@ -96,16 +95,15 @@ const aiInsights = {
 
 const ApprovalInbox = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [selectedRequest, setSelectedRequest] = useState<string | null>(null);
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [comments, setComments] = useState("");
   const [activeTab, setActiveTab] = useState("details");
-  const [decisionMade, setDecisionMade] = useState(false);
 
   const handleViewDetails = (requestId: string) => {
     setSelectedRequest(requestId);
     setDetailsOpen(true);
-    setDecisionMade(false);
     setComments("");
     setActiveTab("details");
   };
@@ -119,14 +117,16 @@ const ApprovalInbox = () => {
       });
       return;
     }
-
-    setDecisionMade(true);
     
     toast({
       title: approved ? "Request Approved" : "Request Rejected",
       description: `Request ${selectedRequest} has been ${approved ? "approved" : "rejected"}.`,
       variant: approved ? "default" : "destructive",
     });
+    
+    // Close the dialog and navigate back to the approval inbox
+    setDetailsOpen(false);
+    setSelectedRequest(null);
   };
 
   const getStatusColor = (status: string) => {
@@ -278,7 +278,7 @@ const ApprovalInbox = () => {
                 </div>
               </div>
 
-              {requestDetails.status === "Awaiting Approval" && !decisionMade && (
+              {requestDetails.status === "Awaiting Approval" && (
                 <>
                   <div className="mt-6">
                     <h3 className="text-sm font-medium mb-2">Comments</h3>
@@ -310,7 +310,7 @@ const ApprovalInbox = () => {
                 </>
               )}
               
-              {requestDetails.status === "Pending For Review" && !decisionMade && (
+              {requestDetails.status === "Pending For Review" && (
                 <>
                   <div className="mt-6">
                     <h3 className="text-sm font-medium mb-2">Review Comments</h3>
@@ -347,7 +347,8 @@ const ApprovalInbox = () => {
               <div className="py-4">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="text-lg font-medium">Transaction Usage Logs</h3>
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" className="flex items-center gap-1">
+                    <Download className="h-4 w-4 mr-1" />
                     Export
                   </Button>
                 </div>
@@ -382,7 +383,8 @@ const ApprovalInbox = () => {
               <div className="py-4">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="text-lg font-medium">Security Audit Logs</h3>
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" className="flex items-center gap-1">
+                    <Download className="h-4 w-4 mr-1" />
                     Export
                   </Button>
                 </div>
@@ -426,7 +428,8 @@ const ApprovalInbox = () => {
               <div className="py-4">
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="text-lg font-medium">Change Document Logs</h3>
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" className="flex items-center gap-1">
+                    <Download className="h-4 w-4 mr-1" />
                     Export
                   </Button>
                 </div>
@@ -479,7 +482,7 @@ const ApprovalInbox = () => {
                       <h4 className="text-base font-medium mb-3">Ownership</h4>
                       <div className="flex flex-col">
                         <div className="mb-2">
-                          <Badge className="bg-pam-blue-light text-pam-blue">
+                          <Badge className="bg-blue-100 text-blue-800">
                             {aiInsights.ownership}
                           </Badge>
                         </div>
@@ -539,12 +542,19 @@ const ApprovalInbox = () => {
                       <h4 className="text-base font-medium mb-3">Risk Score</h4>
                       <div className="flex items-center mb-2">
                         <div className="flex-1 mr-4">
-                          <Progress value={aiInsights.riskScore} className="h-2 bg-muted" 
+                          <Progress 
+                            value={aiInsights.riskScore} 
+                            className={cn(
+                              "h-2",
+                              aiInsights.riskScore > 75 ? "bg-red-200" : 
+                              aiInsights.riskScore > 50 ? "bg-amber-200" : 
+                              "bg-green-200"
+                            )}
                             indicatorClassName={cn(
                               aiInsights.riskScore > 75 ? "bg-red-500" : 
                               aiInsights.riskScore > 50 ? "bg-amber-500" : 
                               "bg-green-500"
-                            )} 
+                            )}
                           />
                         </div>
                         <span className="text-sm font-semibold">{aiInsights.riskScore}/100</span>
